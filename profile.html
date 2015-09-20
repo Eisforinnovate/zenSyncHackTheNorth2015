@@ -1,0 +1,279 @@
+<html>
+    <head>
+        <title>ZenSync</title>
+        <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+         <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+ .chart {
+    height: 160px;
+}
+
+.spacer {
+    height: 20px;
+}  
+
+.spacer2 {
+    width: 10px;
+} 
+            
+        </style>
+        
+    </head>
+    <body>
+        
+        <script>
+            $(function () {
+var message = 0;
+var CoolMsg = 0;
+var SweatMsg = 0;
+var myDataRef = new Firebase('https://brilliant-fire-1353.firebaseio.com/data');
+var myDataSweat = new Firebase('https://brilliant-fire-1353.firebaseio.com/sweat');
+var myDataCool = new Firebase('https://brilliant-fire-1353.firebaseio.com/temp');
+
+myDataRef.on('value',function(snapshot) {
+        message = snapshot.val();
+        console.log(message);
+ 
+});
+
+myDataSweat.on('value',function(snapshot) {
+        SweatMsg = snapshot.val();
+        console.log(SweatMsg);
+ 
+});
+
+myDataCool.on('value',function(snapshot) {
+        CoolMsg = snapshot.val();
+        console.log(CoolMsg);
+ 
+});
+
+Highcharts.setOptions({
+    global: {
+        useUTC: false
+    }
+});
+
+// Create the chart
+$('#container').highcharts('StockChart', {
+    chart: {
+        events: {
+            load: function() {
+
+                // set up the updating of the chart each second
+                var series = this.series[0];
+                setInterval(function() {
+                    console.log(message);
+                    var x = (new Date()).getTime(), // current time
+                        y = Number(message)
+                    series.addPoint([x, y], true, true);
+                }, 1000);
+
+            }
+        }
+    },
+
+    rangeSelector: {
+        buttons: [{
+            count: 1,
+            type: 'minute',
+            text: '1M'
+        }, {
+            count: 5,
+            type: 'minute',
+            text: '5M'
+        }, {
+            type: 'all',
+            text: 'All'
+        }],
+        inputEnabled: false,
+        selected: 0
+    },
+
+    title: {
+        text: 'Galvanic Skin Response'
+    },
+
+    exporting: {
+        enabled: false
+    },
+
+    series: [{
+        name: 'Random data',
+        data: (function() {
+            // generate an array of random data
+            var data = [],
+                time = (new Date()).getTime(),
+                i;
+
+            for (i = -999; i <= 0; i += 1) {
+                data.push([
+                    time + i * 1000,
+                    Math.round(Math.random() * 100)
+                ]);
+            }
+            return data;
+        }())
+    }]
+});
+
+
+$('#chart-A').highcharts({
+chart: {
+    type: 'spline',
+    animation: Highcharts.svg, // don't animate in old IE
+    marginRight: 10,
+    events: {
+        load: function() {
+
+            // set up the updating of the chart each second
+            var series = this.series[0];
+            setInterval(function() {
+                var x = (new Date()).getTime(), // current time
+                    y = Number(SweatMsg);
+                series.addPoint([x, y], true, true);
+            }, 1000);
+        }
+    }
+},
+title: {
+    text: 'Sweat Monitor'
+},
+xAxis: {
+    type: 'datetime',
+    tickPixelInterval: 150
+},
+yAxis: {
+    title: {
+        text: 'Value'
+    },
+    plotLines: [{
+        value: 0,
+        width: 1,
+        color: '#808080'
+    }]
+},
+tooltip: {
+    formatter: function() {
+        return '<b>' + this.series.name + '</b><br/>' +
+            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+            Highcharts.numberFormat(this.y, 2);
+    }
+},
+legend: {
+    enabled: false
+},
+exporting: {
+    enabled: false
+},
+series: [{
+    name: 'Random data',
+    data: (function() {
+        // generate an array of random data
+        var data = [],
+            time = (new Date()).getTime(),
+            i;
+
+        for (i = -19; i <= 0; i += 1) {
+            data.push({
+                x: time + i * 1000,
+                y: Number(SweatMsg)
+            });
+        }
+        return data;
+    }())
+}]
+});
+
+$('#chart-B').highcharts({
+chart: {
+    type: 'spline',
+    animation: Highcharts.svg, // don't animate in old IE
+    marginRight: 10,
+    events: {
+        load: function() {
+
+            // set up the updating of the chart each second
+            var series = this.series[0];
+            setInterval(function() {
+                var x = (new Date()).getTime(), // current time
+                    y = Number(CoolMsg)
+                series.addPoint([x, y], true, true);
+            }, 1000);
+        }
+    }
+},
+title: {
+    text: 'Temperture Monitor'
+},
+xAxis: {
+    type: 'datetime',
+    tickPixelInterval: 150
+},
+yAxis: {
+    title: {
+        text: 'Value'
+    },
+    plotLines: [{
+        value: 0,
+        width: 1,
+        color: '#808080'
+    }]
+},
+tooltip: {
+    formatter: function() {
+        return '<b>' + this.series.name + '</b><br/>' +
+            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+            Highcharts.numberFormat(this.y, 2);
+    }
+},
+legend: {
+    enabled: false
+},
+exporting: {
+    enabled: false
+},
+series: [{
+    name: 'Random data',
+    data: (function() {
+        // generate an array of random data
+        var data = [],
+            time = (new Date()).getTime(),
+            i;
+
+        for (i = -19; i <= 0; i += 1) {
+            data.push({
+                x: time + i * 1000,
+                y: Number(CoolMsg)
+            });
+        }
+        return data;
+    }())
+}]
+});
+
+
+});
+            
+        </script>        
+        
+        
+<script src="http://code.highcharts.com/stock/highstock.js"></script>
+<script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+
+<div id="container" style="height: 300px; min-width: 310px"></div>
+<div class="spacer"></div>
+
+    
+<div id="chart-A" class="chart"></div>
+<div class="spacer"></div>
+<div id="chart-B" class="chart"></div>
+    
+
+
+  
+   
+    </body>
+</html>
